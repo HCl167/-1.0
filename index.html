@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="无言">
+    <title>无言</title>
+    <style>  
+      body {
+        margin: 0;
+        height:100vh;
+        background-color: #eee;
+      }
+      /*{
+        border: 1px solid black;
+      }*/
+      .flex{
+        display:flex;
+      }
+      .flex1{
+        flex:1;
+      }
+      .column{
+      flex-direction:column;
+      }
+      .baiSe{
+        background-color: white;
+      }
+      .mg{
+        margin: 20px;
+      }
+      .mgt{
+        margin-top: 30px;
+      }
+      .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .input-area {
+        margin-bottom: 20px;
+        display: none; /* 未登录时隐藏输入区 */
+      }
+      .messages {
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+      }
+      .message {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .message-user {
+        font-size: 14px;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 8px;
+      }
+      .message-time {
+        font-size: 12px;
+        color: #888;
+        margin-top: 5px;
+        text-align: right;
+      }
+      .user-info {
+        text-align: right;
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+      
+    </style>
+  </head>
+  <body class='flex'>
+    <!--侧边-->
+    <div style='flex:1;' class='flex column baiSe'>
+        <!--头像-->
+        <div style="flex:1">
+            <img src="wyym.png" width="100%" height="100%">
+        </div>
+        <!--按键-->
+        <div style="flex:4" >
+            
+        </div>
+    </div>
+    <!--正文-->
+    <div style='flex:3;'>
+        <!--顶部-->
+        <div  class="baiSe container">
+            <!--登陆区-->
+            <div class="login-area" id="loginArea" style="text-align: center;">
+            <input type="text" id="userIdInput" placeholder="请输入你的用户ID">
+            <button onclick="login()">登录</button>
+        </div>
+        <!-- 用户信息显示（登录后显示） -->
+        <div class="user-info" id="userInfo" style="display: none;"></div>
+        <!--消息输入区(登陆后显示)-->
+        <div style="text-align: center;" class="input-area" id="inputArea">
+            <textarea id="messageInput" placeholder="请输入你想发布的消息..." style="width: 50%;height: 40px;"></textarea>
+            <button onclick="publishMessage()" >发布消息</button>
+        </div>
+            <!--消息展示区-->
+        <div class="messages" id="messagesContainer" >
+            <!-- 消息会在这里显示 -->
+        </div>
+    </div>
+
+    <script>
+      let currentUserId = null; // 当前登录用户ID
+        // 登录函数
+        function login() {
+            const userIdInput = document.getElementById('userIdInput');
+            const userId = userIdInput.value.trim();
+            
+            if (userId === '') {
+                alert('请输入用户ID');
+                return;
+            }
+            
+            // 保存当前用户ID
+            currentUserId = userId;
+            
+            // 显示用户信息
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.textContent = `当前登录用户：${currentUserId}`;
+            userInfoDiv.style.display = 'block';
+            
+            // 隐藏登录区域，显示输入区域
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('inputArea').style.display = 'block';
+            
+            // 清空输入框
+            userIdInput.value = '';
+        }
+        // 发布消息函数
+        function publishMessage() {
+            // 检查是否已登录
+            if (!currentUserId) {
+                alert('请先登录');
+                return;
+            }
+            
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
+            
+            // 检查消息是否为空
+            if (messageText === '') {
+                alert('请输入消息内容后再发布');
+                return;
+            }
+            
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            // 获取当前时间
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            
+            // 设置消息内容（包含用户ID）
+            messageDiv.innerHTML = `
+                <div class="message-user">${currentUserId}</div>
+                <p>${messageText}</p >
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            // 添加到消息容器（新消息显示在最上方）
+            const container = document.getElementById('messagesContainer');
+            container.prepend(messageDiv);
+            
+            // 清空输入框
+            input.value = '';
+        }
+        
+        // 支持按Enter键发布消息（Shift+Enter换行）
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                publishMessage();
+            }
+        });
+    </script>
+  </body>
+</html>
